@@ -29,9 +29,19 @@ jobs:
           gradle-version: '8.7'
 
       - name: Build APK
-        run: gradle assembleDebug --stacktrace
+        run: |
+          echo "=== START BUILD ==="
+          gradle assembleDebug --stacktrace --info
+          echo "=== BUILD FINISHED ==="
+
+      - name: Find APK
+        if: always()
+        run: |
+          echo "=== APK FILES ==="
+          find . -type f \( -name "*.apk" -o -name "*.aab" \) -print
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: TouchKeyMapper-debug
