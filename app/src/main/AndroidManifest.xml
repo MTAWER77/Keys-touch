@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Required to draw the floating control overlay on top of games -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Required to keep the overlay service alive while the user is in-game -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Required only to persist/restore exported layout JSON files the user explicitly shares -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TouchKeyMapper"
+        android:name=".TouchKeyMapperApp">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.TouchKeyMapper">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          Foreground service that owns the WindowManager overlay: the floating
+          control bubble, the button layer, joystick, and mouse-pad while a
+          profile is active. Uses SYSTEM_ALERT_WINDOW only — no other apps'
+          memory or input queues are touched.
+        -->
+        <service
+            android:name=".overlay.OverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Game control overlay for the user's own device" />
+        </service>
+
+        <!--
+          Optional AccessibilityService. Its ONLY function is to call the
+          public dispatchGesture() API to simulate a finger tap/hold/drag at
+          the on-screen coordinates of a virtual button, so the button "click"
+          becomes a normal touch event that any game already knows how to
+          receive. It does not read screen content, does not use
+          FLAG_REQUEST_FILTER_KEY_EVENTS, and cannot inject key codes into
+          other processes — that capability does not exist for third-party
+          apps on non-rooted Android. This is declared explicitly in Settings
+          before the user enables it (see AccessibilityPermissionScreen).
+        -->
+        <service
+            android:name=".accessibility.TouchInjectionService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+    </application>
+</manifest>

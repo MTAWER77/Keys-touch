@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TouchKey Mapper</string>
+    <string name="accessibility_service_description">Lets TouchKey Mapper turn your virtual button presses into real on-screen taps so games receive them as normal touch input. It does not read screen content and cannot access other apps\' data.</string>
+</resources>
