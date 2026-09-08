@@ -28,17 +28,11 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Build APK
-        run: |
-          echo "=== START BUILD ==="
-          gradle assembleDebug --stacktrace --info
-          echo "=== BUILD FINISHED ==="
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.7
 
-      - name: Find APK
-        if: always()
-        run: |
-          echo "=== APK FILES ==="
-          find . -type f \( -name "*.apk" -o -name "*.aab" \) -print
+      - name: Build APK
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
         if: success()
